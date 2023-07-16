@@ -9,7 +9,6 @@ import api from '../utils/api.js'
 import EditProfilePopup from "./EditProfilePopup/EditProfilePopup.jsx";
 import EditAvatarPopup from "./EditAvatarPopup/EditAvatarPopup.jsx";
 import AddPlacePopup from "./AddPlacePopup/AddPlacePopup.jsx";
-//import Card from "./Card/Card.jsx";
 
 function App() {
 
