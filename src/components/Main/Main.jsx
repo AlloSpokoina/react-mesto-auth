@@ -3,7 +3,7 @@ import Card from "../Card/Card"
 import CurrentUserContext from "../../contexts/CurrentUserContext"
 import Spinner from "../Spinner/Spinner.jsx"
 
-export default function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, cards, loading, onDelete }) {
+export default function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, cards, loading, onDelete}) {
   const currentUser = useContext(CurrentUserContext)
 
 

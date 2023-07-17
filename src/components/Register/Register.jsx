@@ -12,7 +12,7 @@ export default function Register({ onRegister }) {
   return (
     <div className="popup__container popup__container_auth">
     <h2 className="popup__title popup__title_type_auth">Регистрация</h2>
-    <form className="popup__form " onSubmit={handleSubmit}>
+    <form className="popup__form" onSubmit={handleSubmit}>
       <input
         className='popup__input popup__input_type_auth'
         id="email"

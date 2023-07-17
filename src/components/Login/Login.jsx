@@ -10,11 +10,11 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="popup__container popup__container_type_auth">
+    <div className="popup__container popup__container_auth">
       <h2 className="popup__title popup__title_type_auth">Вход</h2>
-      <form className="popup__form " onSubmit={handleSubmit}>
+      <form className="popup__form" onSubmit={handleSubmit}>
         <input
-          className={`popup__name popup__name_type_auth ${isInputValid.email === undefined || isInputValid.email ? '' : 'popup__name_type_error'}`}
+          className={`popup__input popup__input_type_auth ${isInputValid.email === undefined || isInputValid.email ? '' : 'popup__name_type_error'}`}
           id="email"
           type="email"
           name="email"
@@ -25,20 +25,20 @@ export default function Login({ onLogin }) {
         />
         <span className="popup__error">{errors.email}</span>
         <input
-          className={`popup__name popup__name_type_auth ${isInputValid.password === undefined || isInputValid.password ? '' : 'popup__name_type_error'}`}
+          className={`popup__input popup__input_type_auth ${isInputValid.password === undefined || isInputValid.password ? '' : 'popup__name_type_error'}`}
           id="password"
           type="password"
           name="password"
           placeholder="Пароль"
           required
-          minLength={3}
+          minLength={6}
           maxLength={30}
           onChange={handleChange}
           value={values.password}
         />
         <span className="popup__error">{errors.password}</span>
         <button
-          className='popup__button popup__button_type_auth'
+          className='popup__submit popup__submit_register'
           type="submit"
           aria-label="Войти"
         >Войти</button>

@@ -13,6 +13,8 @@ export default function Header({ onSignOut, loggedIn, userEmail }) {
         src={logo}
         alt="Логотип"
       />
+      <div className='header__nav'>
+      {loggedIn && <p className='header__email'>{userEmail}</p>}
       {loggedIn
         ? (
           <Link to="/sign-in" className="header__link" onClick={onSignOut}>
@@ -29,6 +31,7 @@ export default function Header({ onSignOut, loggedIn, userEmail }) {
             <Link to="/sign-in" className="header__link">
               Войти
             </Link>)}
+            </div>
     </header>
   )
 }

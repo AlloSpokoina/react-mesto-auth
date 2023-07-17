@@ -4,4 +4,6 @@
   border-bottom: 2px solid #CCCCCC;
   color: #CCCCCC;
 }
-
+.popup__input_type_auth::placeholder{
+  color: #CCCCCC;
+}

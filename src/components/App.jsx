@@ -1,6 +1,7 @@
 import { Routes, Route, useNavigate, Navigate, Router, Switch } from 'react-router-dom';
 import Header from "./Header/Header.jsx";
 import Register from './Register/Register.jsx';
+import Login from './Login/Login.jsx';
 import Main from "./Main/Main.jsx";
 import Footer from "./Footer/Footer.jsx";
 import PopupWithForm from "./PopupWithForm/PopupWithForm.jsx";
@@ -13,6 +14,7 @@ import EditAvatarPopup from "./EditAvatarPopup/EditAvatarPopup.jsx";
 import AddPlacePopup from "./AddPlacePopup/AddPlacePopup.jsx";
 import { register, login, getUserData } from "../utils/authorization.js";
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute.jsx';
+import InfoTooltip from './InfoTooltip/InfoTooltip.jsx';
 
 function App() {
 
@@ -43,6 +45,7 @@ function App() {
     setisEditAvatarPopupOpen(false)
     setIsImagePopup(false)
     setDeletePopup(false)
+    setIsInfoToolTipPopupOpen(false)
   }, [])
 
   const closeAllPopups = useCallback(() => {
@@ -166,7 +169,7 @@ function App() {
         setLoggedIn(true)
           navigate('/')
         })
-        .catch(err => console.error(`Ошибка авторизации ${err}`))
+        .catch(error => console.error(`Ошибка авторизации ${error}`))
     } else {
       setLoggedIn(false)
     }
@@ -187,6 +190,7 @@ function App() {
       .finally(() => setIsLoading(false))
   }
 
+
   function handleRegister(email, password) {
     register(email, password)
       .then((res) => {
@@ -197,13 +201,43 @@ function App() {
       .catch((err) => {
         setIsInfoToolTipPopupOpen(true);
         setIsSuccessful(false);
-        console.error(`Ошибка при регистрации ${err}`)
+        console.error(`Ошибка регистрации ${err}`)
       })
   }
 
+  function handleLogin(email, password) {
+    login(email, password)
+      .then((res) => {
+        localStorage.setItem('jwt', res.token)
+        setLoggedIn(true)
+        navigate('/')
+      })
+      .catch((err) => {
+        setIsInfoToolTipPopupOpen(true)
+        setIsSuccessful(false)
+        console.error(`Ошибка авторизации ${err}`)
+      })
+  }
+
+  function handleSignOut() {
+    localStorage.removeItem('jwt')
+    setLoggedIn(false)
+    navigate('sign-in');
+  }
+
+  function handleTokenCheck(token) {
+    getUserData(token)
+      .then(res => {
+        setLoggedIn(res.data != null)
+        setUserEmail(res.data.email)
+        navigate('/')
+      })
+      .catch(() => console.log('error'))
+  }
+
   return (
-    <CurrentUserContext.Provider value={currentUser}>
-      <div className="page__container">
+    <div className="page__container">
+      <CurrentUserContext.Provider value={currentUser}>
         <Header
           userEmail={userEmail}
           onSignUp={handleSignOut}
@@ -230,10 +264,10 @@ function App() {
             onRegister={handleRegister}
           />} />
 
-          {/*<Route path='/sign-in' element={<Login
+          <Route path='/sign-in' element={<Login
             onLogin={handleLogin}
             onTokenCheck={handleTokenCheck}
-         />} />*/}
+          />} />
 
           <Route path='*' element={<Navigate to='/' replace />} />
 
@@ -277,8 +311,13 @@ function App() {
           isOpen={isImagePopup}
           onClose={closeAllPopups} />
 
-      </div>
-    </CurrentUserContext.Provider>
+        <InfoTooltip
+          isOpen={isInfoToolTipPopupOpen}
+          isSuccess={isSuccessful}
+          onClose={closeAllPopups}
+        />
+      </CurrentUserContext.Provider>
+    </div>
 
   );
 }
