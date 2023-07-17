@@ -1,14 +1,18 @@
+import { Routes, Route, useNavigate, Navigate, Router, Switch } from 'react-router-dom';
 import Header from "./Header/Header.jsx";
+import Register from './Register/Register.jsx';
 import Main from "./Main/Main.jsx";
 import Footer from "./Footer/Footer.jsx";
 import PopupWithForm from "./PopupWithForm/PopupWithForm.jsx";
 import ImagePopup from "./ImagePopup/ImagePopup.jsx";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import CurrentUserContext from '../contexts/CurrentUserContext.js'
 import api from '../utils/api.js'
 import EditProfilePopup from "./EditProfilePopup/EditProfilePopup.jsx";
 import EditAvatarPopup from "./EditAvatarPopup/EditAvatarPopup.jsx";
 import AddPlacePopup from "./AddPlacePopup/AddPlacePopup.jsx";
+import { register, login, getUserData } from "../utils/authorization.js";
+import ProtectedRoute from './ProtectedRoute/ProtectedRoute.jsx';
 
 function App() {
 
@@ -25,6 +29,12 @@ function App() {
   const [cards, setCards] = useState([])
   const [deleteCardId, setDeleteCardId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  const navigate = useNavigate()
+  const [loggedIn, setLoggedIn] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
+  const [isInfoToolTipPopupOpen, setIsInfoToolTipPopupOpen] = useState(false);
+  const [isSuccessful, setIsSuccessful] = useState(false);
 
 
   const setStatesForCloseAllPopups = useCallback(() => {
@@ -129,16 +139,39 @@ function App() {
       .finally(() => setIsLoading(false))
   }
 
+  function handleSignOut() {
+    localStorage.removeItem('jwt');
+    setLoggedIn(false);
+    navigate('/sign-in');
+  }
+
   useEffect(() => {
     setLoading(true)
-    Promise.all([api.getInfo(), api.getCards()])
-      .then(([dataUser, dataCards]) => {
-        setCurrentUser(dataUser)
-        setCards(dataCards)
-        setLoading(false)
-      })
-      .catch((error) => console.error(`Ошибка при загрузке данных ${error}`));
-  }, [])
+    if (loggedIn) {
+      Promise.all([api.getInfo(), api.getCards()])
+        .then(([dataUser, dataCards]) => {
+          setCurrentUser(dataUser)
+          setCards(dataCards)
+          setLoading(false)
+        })
+        .catch((error) => console.error(`Ошибка при загрузке данных ${error}`));
+    }
+  }, [loggedIn])
+
+  useEffect(() => {
+    if (localStorage.jwt) {
+      getUserData(localStorage.jwt)
+      .then(res => {
+        setUserEmail(res.data.email)
+        setLoggedIn(true)
+          navigate('/')
+        })
+        .catch(err => console.error(`Ошибка авторизации ${err}`))
+    } else {
+      setLoggedIn(false)
+    }
+  }, [navigate])
+
 
   function handleDeleteSubmit(evt) {
     evt.preventDefault()
@@ -154,25 +187,59 @@ function App() {
       .finally(() => setIsLoading(false))
   }
 
+  function handleRegister(email, password) {
+    register(email, password)
+      .then((res) => {
+        setIsInfoToolTipPopupOpen(true)
+        setIsSuccessful(true)
+        navigate('/sign-in')
+      })
+      .catch((err) => {
+        setIsInfoToolTipPopupOpen(true);
+        setIsSuccessful(false);
+        console.error(`Ошибка при регистрации ${err}`)
+      })
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page__container">
+        <Header
+          userEmail={userEmail}
+          onSignUp={handleSignOut}
+          loggedIn={loggedIn} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute
+                element={Main}
+                loggedIn={loggedIn}
+                userEmail={userEmail}
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onEditAvatar={handleEditAvatarClick}
+                onCardClick={handleCardClick}
+                cards={cards}
+                loading={loading}
+                onDelete={handleDeletePopup}
+                onCardLike={handleCardLike}
+              />}></Route>
 
-        <Header />
+          <Route path='/sign-up' element={<Register
+            onRegister={handleRegister}
+          />} />
 
-        <Main
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onEditAvatar={handleEditAvatarClick}
-          onCardClick={handleCardClick}
-          cards={cards}
-          loading={loading}
-          onDelete={handleDeletePopup}
-          onCardLike={handleCardLike}
-        />
+          {/*<Route path='/sign-in' element={<Login
+            onLogin={handleLogin}
+            onTokenCheck={handleTokenCheck}
+         />} />*/}
 
+          <Route path='*' element={<Navigate to='/' replace />} />
+
+
+        </Routes>
         <Footer />
-
 
         <EditProfilePopup
           onUpdateUser={handleUpdateUser}
@@ -209,6 +276,7 @@ function App() {
           card={selectedCard}
           isOpen={isImagePopup}
           onClose={closeAllPopups} />
+
       </div>
     </CurrentUserContext.Provider>
 
