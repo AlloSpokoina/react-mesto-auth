@@ -222,7 +222,7 @@ function App() {
   function handleSignOut() {
     localStorage.removeItem('jwt')
     setLoggedIn(false)
-    navigate('sign-in');
+    navigate('/sign-in')
   }
 
   function handleTokenCheck(token) {
@@ -240,7 +240,7 @@ function App() {
       <CurrentUserContext.Provider value={currentUser}>
         <Header
           userEmail={userEmail}
-          onSignUp={handleSignOut}
+          onSignOut={handleSignOut}
           loggedIn={loggedIn} />
         <Routes>
           <Route

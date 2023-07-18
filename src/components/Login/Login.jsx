@@ -14,7 +14,7 @@ export default function Login({ onLogin }) {
       <h2 className="popup__title popup__title_type_auth">Вход</h2>
       <form className="popup__form" onSubmit={handleSubmit}>
         <input
-          className={`popup__input popup__input_type_auth ${isInputValid.email === undefined || isInputValid.email ? '' : 'popup__name_type_error'}`}
+          className={`popup__input popup__input_type_auth ${isInputValid.email === undefined || isInputValid.email ? '' : 'popup__input_type_error'}`}
           id="email"
           type="email"
           name="email"
@@ -25,7 +25,7 @@ export default function Login({ onLogin }) {
         />
         <span className="popup__error">{errors.email}</span>
         <input
-          className={`popup__input popup__input_type_auth ${isInputValid.password === undefined || isInputValid.password ? '' : 'popup__name_type_error'}`}
+          className={`popup__input popup__input_type_auth ${isInputValid.password === undefined || isInputValid.password ? '' : 'popup__input_type_error'}`}
           id="password"
           type="password"
           name="password"
