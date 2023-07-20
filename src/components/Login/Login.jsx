@@ -21,7 +21,7 @@ export default function Login({ onLogin }) {
           placeholder="Email"
           required
           onChange={handleChange}
-          value={values.email}
+          value={values.email || ''}
         />
         <span className="popup__error">{errors.email}</span>
         <input
@@ -34,7 +34,7 @@ export default function Login({ onLogin }) {
           minLength={6}
           maxLength={30}
           onChange={handleChange}
-          value={values.password}
+          value={values.password || ''}
         />
         <span className="popup__error">{errors.password}</span>
         <button
