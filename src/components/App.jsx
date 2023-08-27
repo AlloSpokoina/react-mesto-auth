@@ -95,7 +95,7 @@ function App() {
 
   function handleUpdateUser(dataUser, reset) {
     setIsLoading(true)
-    api.setUserInfo(dataUser)
+    api.setUserInfo(dataUser, localStorage.jwt)
       .then(res => {
         setCurrentUser(res)
         closeAllPopups()
@@ -108,7 +108,7 @@ function App() {
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
     api
-      .changeLikeCardStatus(card._id, !isLiked)
+      .changeLikeCardStatus(card._id, localStorage.jwt, !isLiked)
       .then((newCard) => {
         setCards((state) =>
           state.map((c) => (c._id === card._id ? newCard : c))
@@ -120,7 +120,7 @@ function App() {
 
   function handleUpdateAvatar(dataUser, reset) {
     setIsLoading(true)
-    api.setAddNewAvatar(dataUser)
+    api.setAddNewAvatar(dataUser, localStorage.jwt)
       .then(res => {
         setCurrentUser(res)
         closeAllPopups()
@@ -132,7 +132,7 @@ function App() {
 
   function handleSubmitPlace(dataCard, reset) {
     setIsLoading(true)
-    api.addCard(dataCard)
+    api.addCard(dataCard, localStorage.jwt)
       .then((res) => {
         setCards([res, ...cards])
         closeAllPopups()
@@ -151,7 +151,7 @@ function App() {
   useEffect(() => {
     setLoading(true)
     if (loggedIn) {
-      Promise.all([api.getInfo(), api.getCards()])
+      Promise.all([api.getInfo(localStorage.jwt), api.getCards(localStorage.jwt)])
         .then(([dataUser, dataCards]) => {
           setCurrentUser(dataUser)
           setCards(dataCards)
@@ -179,7 +179,7 @@ function App() {
   function handleDeleteSubmit(evt) {
     evt.preventDefault()
     setIsLoading(true)
-    api.deleteCard(deleteCardId)
+    api.deleteCard(deleteCardId, localStorage.jwt)
       .then(() => {
         setCards(cards.filter(card => {
           return card._id !== deleteCardId
